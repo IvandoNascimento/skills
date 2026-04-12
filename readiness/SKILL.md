@@ -18,6 +18,7 @@ Run through each category below. For each, assign a score from 0-10 and note spe
 Check for and evaluate quality of:
 
 - **CLAUDE.md** — Does it exist? Is it detailed? Does it cover: project overview, architecture, conventions, common commands, gotchas?
+- **Response style / token efficiency** — Does CLAUDE.md include output style constraints (terse responses, no filler, no trailing summaries)? This reduces token usage by 50-75% per response. Grep for keywords like "terse", "filler", "summary", "concise", "drop articles".
 - **CLAUDE.local.md** — Personal overrides?
 - **.claude/** directory — Custom commands, skills, settings?
 - **AGENTS.md** — Agent-specific instructions?
@@ -27,7 +28,8 @@ Check for and evaluate quality of:
 Score guide:
 - 0: Nothing exists
 - 5: CLAUDE.md exists but is sparse
-- 10: Rich CLAUDE.md + commands + hooks + MCP configured
+- 8: Rich CLAUDE.md + commands + response style instructions
+- 10: Rich CLAUDE.md + commands + response style + hooks + MCP configured
 
 ### 2. Test Infrastructure (Weight: 15%)
 
@@ -172,6 +174,7 @@ Grade Scale: A (80+) | B (65-79) | C (50-64) | D (35-49) | F (<35)
 
 ## Rules
 
+- **Check for response style instructions** — Grep CLAUDE.md for keywords like "terse", "filler", "summary", "token", "concise", "drop articles". If absent, recommend adding a Response Style section (e.g., "Write terse. Drop articles, filler words, pleasantries. No trailing summaries.") as a quick win for 50-75% token savings.
 - **Be concrete** — don't say "add more tests", say "add tests for `src/services/secrets.ts` — currently 0 test files for 5 service modules"
 - **Prioritize by impact** — recommendations should be ordered by how much they'd improve AI-assisted development productivity
 - **Don't penalize for irrelevant things** — a CLI tool doesn't need API docs; a library doesn't need CI/CD deploy steps
