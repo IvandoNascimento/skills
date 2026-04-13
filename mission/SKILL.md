@@ -40,8 +40,14 @@ For each phase:
 1. Mark the phase as `in_progress` in the mission file
 2. Create Claude Code tasks for the phase's work items
 3. Execute the work
-4. Run tests / validate
-5. Mark phase as `completed` with a brief summary of what was done
+4. **Test gate** — mandatory before marking complete:
+   - Run the project's full test suite (check CLAUDE.md for the command). All tests must pass.
+   - Write new tests for any new exported functions or route handlers added in this phase.
+   - Write regression tests for any bugs fixed in this phase.
+   - Run the linter and fix any errors.
+   - If the phase touched UI, run E2E tests or verify manually in the browser.
+   - **A phase cannot be marked complete with failing tests.**
+5. Mark phase as `completed` with a brief summary of what was done + test results
 6. Ask the user if they want to continue to the next phase or pause
 
 ### Phase 3: Completion
@@ -114,3 +120,5 @@ When the user says `/mission resume` or `/mission status`:
 - **Ask before big decisions** — if a phase reveals unexpected complexity, pause and discuss with the user
 - **Keep phases small** — if a phase has more than 5-6 work items, split it
 - When creating the mission file, resolve the project root by looking for the nearest parent directory containing `.git/`
+- **Tests are not optional** — every phase must pass the project's test suite before being marked complete. Check CLAUDE.md for test commands. If no tests exist for the code you wrote, write them. If the project has a `/scaffold-tests` skill, consider running it for new modules.
+- **Include a testing work item** — when planning phases, always include a work item like "Write/update tests for changes in this phase" as the last item in each phase

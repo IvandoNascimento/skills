@@ -111,12 +111,19 @@ Implement each step from the plan, one at a time.
 
 2. **Implement** — Write the code. Follow existing patterns. Don't over-engineer.
 
-3. **Validate** — After each step:
-   - Run relevant tests if they exist
+3. **Test gate** — After each step, tests are mandatory:
+   - Run the project's test suite (check CLAUDE.md for the command). All tests must pass.
+   - If you added a new exported function, write a test for it **before moving on**.
+   - If you fixed a bug, write a regression test that would have caught it.
+   - If you changed a route handler, verify with an integration test (app.inject or equivalent).
+   - Run the linter. Fix any errors introduced by your changes.
+   - **Do not proceed to the next step with failing tests.**
+
+4. **Validate** — After tests pass:
    - Check for type errors if applicable
    - Verify the step's specific acceptance criteria
 
-4. **Checkpoint** — After each step completes:
+5. **Checkpoint** — After each step completes:
    - Mark the requirement checkboxes that are now satisfied
    - If the step failed validation, stop and discuss before continuing
    - For low-risk steps, continue automatically
