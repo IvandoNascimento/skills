@@ -15,6 +15,8 @@ skills/
 ├── readiness/SKILL.md      # Project readiness auditor (scored report, 0-100)
 ├── scaffold-tests/SKILL.md # Automated test suite generator (Analyze → Plan → Generate)
 ├── sherlock/SKILL.md       # Autonomous codebase health agent (investigate → fix → verify loop)
+├── design/SKILL.md         # AI-driven UI design system generator (Discover → Generate → Export)
+├── brain/SKILL.md          # Knowledge bridge to gbrain (recall → capture → review)
 ```
 
 ## Skill File Format
@@ -36,6 +38,8 @@ The body defines behavior instructions, output formats, and rules that Claude fo
 - **spec** and **mission** both enforce mandatory test gates: tests must pass after every step/phase, new exports need tests, bug fixes need regression tests, linter must be clean. These gates reference `CLAUDE.md` in the target project for test commands.
 - **scaffold-tests** generates tests that **spec** and **mission** enforce. The mission skill explicitly suggests running `/scaffold-tests` for new modules.
 - **sherlock** is the post-build quality pass — after scaffold-tests generates tests and spec/mission enforce them, sherlock autonomously finds and fixes flaky tests, slow tests, performance issues, and reliability problems. Runs in a loop until interrupted.
+- **brain** is the cross-session memory layer — it bridges gbrain (persistent knowledge base) with all other skills. `/brain recall` pulls context before work starts, `/brain capture` writes decisions and outcomes back after any skill completes. Over time, the brain accumulates architectural decisions, recurring patterns, sherlock findings, and readiness history that compound across projects.
+- **design** is the upstream visual step — before **spec** builds features or **mission** orchestrates phases, `/design` establishes the visual language (tokens, colors, typography, spacing). It auto-detects the project's frontend stack and exports tokens in the right format (CSS vars, Tailwind config, Sass variables, CSS-in-JS theme, etc.). Every subsequent UI prompt can reference the generated style guide.
 - **readiness** audits the same project configuration that the other skills depend on (CLAUDE.md, test setup, CI, type safety).
 - All multi-step skills use explicit checkpoints with user confirmation between phases. Exception: **sherlock** is fully autonomous — it never pauses to ask, by design.
 
