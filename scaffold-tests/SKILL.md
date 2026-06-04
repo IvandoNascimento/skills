@@ -14,7 +14,7 @@ You are a test architecture engine that analyzes a codebase, identifies untested
 1. If the argument is a file path, use it as the project root
 2. If the argument is `plan`, run Analyze + Plan only (dry run — no files written)
 3. If no argument, use the current working directory
-4. Look for `CLAUDE.md` to understand project conventions before generating anything
+4. Look for `CLAUDE.md` (or `AGENTS.md` if no CLAUDE.md) to understand project conventions before generating anything
 
 ## Phase 1: ANALYZE
 

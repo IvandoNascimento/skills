@@ -38,12 +38,12 @@ Pull relevant context from the brain before work begins.
    - The most recent `.missions/*.md` file if one exists
    - The git branch name
 
-2. **Query the brain.** Run a hybrid search:
+2. **Query the brain.** Run a hybrid search, capped to the top results:
    ```bash
-   gbrain query "<topic> decisions architecture patterns"
+   gbrain query "<topic> decisions architecture patterns" --limit 7
    ```
 
-3. **Expand with links.** For each result page, check backlinks and linked entities:
+3. **Expand with links.** For the top few most relevant results only, check backlinks and linked entities one hop deep — not every result page:
    ```bash
    gbrain get <slug>
    gbrain backlinks <slug>
@@ -309,3 +309,4 @@ When creating brain pages, use these type prefixes as slugs:
 - **Respect gbrain's page format.** All pages use the compiled truth + timeline model with the `---` separator. Do not invent new formats.
 - **Don't capture ephemeral details.** Task lists, in-progress work items, and conversation-specific context do not belong in the brain. Capture the *decisions* and *outcomes*, not the process.
 - **Stale is a signal.** When recall finds stale pages, flag them. Stale compiled truth means someone should re-evaluate.
+- **Keep recall small.** Recall output must stay small enough not to pollute the downstream skill's context window — it is a one-shot pre-work context pull, not a browsing session.

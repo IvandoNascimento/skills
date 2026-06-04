@@ -37,7 +37,9 @@ Analyze the spec and produce a structured implementation plan.
    - Dependencies needed
    - Potential conflicts with existing code
 
-3. **Produce the plan** — Output in this format:
+3. **Clarify (only if needed)** — If the spec is ambiguous or has no clear acceptance criteria, ask the user 2-3 targeted questions **once**, incorporate the answers, then continue. Otherwise skip straight to producing the plan. Do not loop.
+
+4. **Produce the plan** — Output in this format:
 
 ```
 ╔══════════════════════════════════════════╗
@@ -81,7 +83,7 @@ ESTIMATED SCOPE
   Steps: X
 ```
 
-4. **Checkpoint** — Present the plan and ask:
+5. **Checkpoint** — Present the plan and ask:
    > "Plan ready. Want me to proceed, or adjust anything?"
 
    Wait for user confirmation before moving to Phase 2.
@@ -112,24 +114,26 @@ Implement each step from the plan, one at a time.
 2. **Implement** — Write the code. Follow existing patterns. Don't over-engineer.
 
 3. **Test gate** — After each step, tests are mandatory:
-   - Run the project's test suite (check CLAUDE.md for the command). All tests must pass.
+   - Run the project's test suite (check CLAUDE.md, or AGENTS.md if no CLAUDE.md, for the command). All tests must pass.
    - If you added a new exported function, write a test for it **before moving on**.
    - If you fixed a bug, write a regression test that would have caught it.
    - If you changed a route handler, verify with an integration test (app.inject or equivalent).
    - Run the linter. Fix any errors introduced by your changes.
    - **Do not proceed to the next step with failing tests.**
 
-4. **Validate** — After tests pass:
+4. **Self-review the diff** — Re-read this step's diff against the codebase's conventions and the spec's requirements. Fix any deviations before moving on.
+
+5. **Validate** — After tests pass:
    - Check for type errors if applicable
    - Verify the step's specific acceptance criteria
 
-5. **Checkpoint** — After each step completes:
+6. **Checkpoint** — After each step completes:
    - Mark the requirement checkboxes that are now satisfied
    - If the step failed validation, stop and discuss before continuing
    - For low-risk steps, continue automatically
    - For high-risk steps, pause and confirm with the user
 
-5. **Update the spec tracker** — Keep a running status:
+7. **Update the spec tracker** — Keep a running status:
    ```
    PROGRESS: [████░░░░░░] 3/7 steps
    ✅ Step 1: Done
@@ -176,3 +180,5 @@ NOTES
 - **Be honest about risk** — if something is uncertain, flag it as high-risk in the plan
 - **Keep steps atomic** — each step should produce a working (or at least non-breaking) state
 - **Use existing patterns** — read the codebase first, don't introduce new conventions
+- **Ask once if unclear** — if acceptance criteria are missing or the spec is ambiguous, ask before planning — but ask once, then proceed
+- **Right-size the spec** — if the spec describes multiple independent features that would each need their own plan, say so and suggest running `/mission` to orchestrate them in phases; proceed with spec only if the user confirms

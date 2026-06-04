@@ -17,7 +17,8 @@ Run through each category below. For each, assign a score from 0-10 and note spe
 
 Check for and evaluate quality of:
 
-- **CLAUDE.md** — Does it exist? Is it detailed? Does it cover: project overview, architecture, conventions, common commands, gotchas?
+- **CLAUDE.md** — Does it exist? Is it detailed? Does it cover: project overview, architecture, conventions, common commands, gotchas? Is it focused and actionable (concrete test/lint commands, type rules like no `any`) rather than long and unfocused?
+- **Response style / token efficiency** — Does CLAUDE.md include output style constraints (terse responses, no filler, no trailing summaries)? This reduces token usage by 50-75% per response.
 - **CLAUDE.local.md** — Personal overrides?
 - **.claude/** directory — Custom commands, skills, settings?
 - **AGENTS.md** — Agent-specific instructions?
@@ -27,7 +28,8 @@ Check for and evaluate quality of:
 Score guide:
 - 0: Nothing exists
 - 5: CLAUDE.md exists but is sparse
-- 10: Rich CLAUDE.md + commands + hooks + MCP configured
+- 8: Focused CLAUDE.md + commands + response style instructions
+- 10: Focused, actionable CLAUDE.md (commands, conventions, gotchas) + response style + hooks + MCP — not bloated or padded
 
 ### 2. Test Infrastructure (Weight: 15%)
 
@@ -177,4 +179,5 @@ Grade Scale: A (80+) | B (65-79) | C (50-64) | D (35-49) | F (<35)
 - **Don't penalize for irrelevant things** — a CLI tool doesn't need API docs; a library doesn't need CI/CD deploy steps
 - **Check both frontend and backend** if the project is full-stack — look for the project root, not just the current directory
 - **Be fast** — use Glob and Grep for detection, don't read every file in detail
+- **Check for response style instructions** — Grep CLAUDE.md for keywords like "terse", "filler", "summary", "token", "concise", "drop articles". If absent, recommend adding a Response Style section (e.g., "Write terse. Drop articles, filler words, pleasantries. No trailing summaries.") as a quick win for 50-75% token savings.
 - **Quick wins first** — if creating a CLAUDE.md would take 5 minutes and boost the score by 15 points, say that

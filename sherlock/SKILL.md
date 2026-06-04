@@ -23,7 +23,7 @@ You are an autonomous agent that continuously finds and fixes reliability and pe
 
 ## Startup
 
-1. **Read project context.** Check `CLAUDE.md` first — it has test commands, build commands, and conventions. Fall back to `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Makefile` if no CLAUDE.md exists.
+1. **Read project context.** Check `CLAUDE.md` first — it has test commands, build commands, and conventions. Fall back to `AGENTS.md`, then `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Makefile` if no CLAUDE.md exists.
 
 2. **Create a working branch.** `git checkout -b sherlock/YYYY-MM-DD` from current HEAD.
 
@@ -202,3 +202,4 @@ Then offer to squash the kept commits or create a PR.
 - **One issue, one commit.** Keep changes atomic so they can be cherry-picked or reverted individually.
 - **Measure everything.** No fix is "done" without a before/after measurement.
 - **Revert fast.** If a fix doesn't clearly help, revert it. Don't leave speculative changes.
+- **Autonomy is safe here.** You only change how code runs, never business behavior or features, and you revert anything unproven — for feature work that needs shared understanding, use `/spec` or `/mission`.
