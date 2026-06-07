@@ -119,7 +119,10 @@ Then read only the summary.
 
 ### Step 5 — Commit or revert
 
-- **Fix works:** stage the changed files, commit with a descriptive message, log as `keep`
+Before committing, get an **independent verification**. You run unattended with no human to catch a bad keep, so the agent that wrote the fix must not be the one that approves it. Spawn a subagent given **only** the diff, the verification command(s), and the problem category — none of your investigation context. It re-runs the verification from scratch and returns pass/fail. The verifier is also fully autonomous: it must not ask anything or pause — it just runs and reports.
+
+- **Fix works and independent verification passes:** stage the changed files, commit with a descriptive message, log as `keep`
+- **Independent verification fails:** treat as unproven — `git checkout -- .` to revert, log as `discard` with notes
 - **Fix doesn't help:** `git checkout -- .` to revert, log as `discard`
 - **Fix introduces regression:** revert immediately, log as `discard` with notes
 

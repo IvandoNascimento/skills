@@ -192,6 +192,40 @@ Tell the user to open it in a browser and review. Ask:
 
 Wait for user confirmation before proceeding to Phase 3.
 
+## Phase 2.5: INDEPENDENT QUALITY PASS
+
+Before exporting, audit the generated showcase with fresh eyes — the generation conversation is biased toward what it intended to do, not what the file actually contains.
+
+Spawn a fresh-context subagent that re-reads **ONLY** `/tmp/design-showcase.html` — not this conversation, not the STYLE DEFINITION, not the generation reasoning. Its only inputs are the HTML file and the rubric below.
+
+### Rubric for the subagent:
+
+1. **Token bypasses** — Scan for hardcoded `#hex` colors or `px` values in CSS that should reference a custom property instead. Ignore values that legitimately can't be tokenized (e.g. `border-radius: 9999px` for pills, `1px` hairline borders, token *definitions* in `:root`). Report each violation with its line number and the property it appears on.
+
+2. **Accessibility gaps** — Check every interactive component (buttons, inputs, toggles, tabs, dropdowns, modals, dismiss buttons) for: missing `aria-*` attributes, missing visible focus rings, and missing keyboard affordances. Report each gap with its line number and the component it affects.
+
+### Output:
+
+The subagent returns concrete findings in this format:
+
+```
+QUALITY PASS — FINDINGS
+─────────────────────────
+Token bypasses:
+  L<line>  <property>: <hardcoded value>  → should use <token>
+  ...
+
+Accessibility gaps:
+  L<line>  <component> — <missing aria / focus ring / keyboard affordance>
+  ...
+```
+
+If the subagent finds nothing, it reports `No findings — showcase is clean.`
+
+### Acting on findings:
+
+Every finding must be fixed in `/tmp/design-showcase.html` before Phase 3 export. Apply the fixes, then re-run this pass until it comes back clean. Do not proceed to export with known token bypasses or accessibility gaps outstanding.
+
 ## Phase 3: EXPORT & COMMIT
 
 ### Step 1: Auto-Detect Stack

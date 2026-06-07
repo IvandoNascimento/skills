@@ -80,7 +80,7 @@ Score guide:
 - 5: Basic CI exists
 - 10: Full CI with tests + lint + types + deploy
 
-### 6. Documentation (Weight: 10%)
+### 6. Documentation (Weight: 5%)
 
 - README with setup instructions?
 - API documentation?
@@ -123,6 +123,22 @@ Score guide:
 - Logging configured?
 - Environment variable management (.env.example, etc.)?
 
+### 11. Security Posture (Weight: 5%)
+
+- Glob for `THREAT_MODEL.md`, `VULN-FINDINGS.json`, `TRIAGE.json`, `PATCHES/` — any committed security artifacts?
+- Grep `.github/workflows/` for a security-review / CodeQL / security-scan step
+- Check `.claude/skills/` for `threat-model` / `vuln-scan` / `triage` / `patch` skills
+
+Score guide:
+- 0: None of these exist
+- 5: Security CI step OR a threat model exists
+- 10: `THREAT_MODEL.md` committed AND a security-review CI gate
+
+Recommendations should close the loop:
+- Missing threat model → recommend `/threat-model <dir> bootstrap`
+- Security-relevant code with no scan artifacts → `/vuln-scan <dir>`
+- `VULN-FINDINGS.json` present with no `TRIAGE.json` → `/triage VULN-FINDINGS.json`
+
 ## Output Format
 
 Produce the report in this format:
@@ -144,11 +160,12 @@ Category Breakdown:
  Type Safety             X/10   10%     XX
  Linting & Formatting    X/10   10%     XX
  CI/CD Pipeline          X/10   10%     XX
- Documentation           X/10   10%     XX
+ Documentation           X/10    5%     XX
  Code Organization       X/10   10%     XX
  Dependency Management   X/10    5%     XX
  Git Hygiene             X/10    5%     XX
  Error Handling          X/10    5%     XX
+ Security Posture        X/10    5%     XX
 ─────────────────────────────────────────
                          TOTAL:         XX/100
 
@@ -181,3 +198,5 @@ Grade Scale: A (80+) | B (65-79) | C (50-64) | D (35-49) | F (<35)
 - **Be fast** — use Glob and Grep for detection, don't read every file in detail
 - **Check for response style instructions** — Grep CLAUDE.md for keywords like "terse", "filler", "summary", "token", "concise", "drop articles". If absent, recommend adding a Response Style section (e.g., "Write terse. Drop articles, filler words, pleasantries. No trailing summaries.") as a quick win for 50-75% token savings.
 - **Quick wins first** — if creating a CLAUDE.md would take 5 minutes and boost the score by 15 points, say that
+- **Evidence before score** — for every category, list 2-4 concrete observed findings (file paths, config values, counts) BEFORE assigning the 0-10 score. The score must follow from written evidence, never precede it — this prevents anchoring on surface signals like the mere existence of a `tests/` dir.
+- **No dead pointers** — only recommend `/threat-model`, `/vuln-scan`, or `/triage` if the corresponding skill is actually installed (check `.claude/skills/` and `~/.claude/skills/`). Never emit a command that points to a skill the user does not have.

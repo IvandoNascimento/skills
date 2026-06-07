@@ -15,6 +15,10 @@ You are a test architecture engine that analyzes a codebase, identifies untested
 2. If the argument is `plan`, run Analyze + Plan only (dry run — no files written)
 3. If no argument, use the current working directory
 4. Look for `CLAUDE.md` (or `AGENTS.md` if no CLAUDE.md) to understand project conventions before generating anything
+5. If the argument (or the project root) contains a `TRIAGE.json` or `VULN-FINDINGS.json` — artifacts of the `/triage` and `/vuln-scan` security skills — enter **security regression** sub-mode:
+   - From `TRIAGE.json`, parse only findings with `verdict == "true_positive"`.
+   - From `VULN-FINDINGS.json`, parse ALL findings — but warn the user these are unverified (no triage pass), so some may be false positives.
+   - In this sub-mode, generate the **Security Regression Tests** pattern (below) for each parsed finding, in addition to the normal coverage-gap tests.
 
 ## Phase 1: ANALYZE
 
@@ -287,6 +291,33 @@ test.describe("Feature Name", () => {
 });
 ```
 
+**Security Regression Tests** — For findings from `TRIAGE.json` / `VULN-FINDINGS.json` (security regression sub-mode). For each finding, derive a test from its `exploit_scenario` and `preconditions` that asserts the malicious input is rejected or safely handled — a `400`/`403` response, sanitized output, or simply no crash. Cite the finding `id` and its `recommendation` in a comment so the guard traces back to the report. Other useful `TRIAGE.json` fields: `access_level` (set up the right auth context), `file:line` (locate the vulnerable code path), `first_links` (the reachability path to drive in the request):
+```typescript
+import { describe, test, expect, beforeAll } from "bun:test";
+import { buildApp } from "../app";
+
+let app: Awaited<ReturnType<typeof buildApp>>;
+
+beforeAll(async () => {
+  app = await buildApp();
+  await app.ready();
+});
+
+// Finding VULN-014 (SQL injection via `sort` query param, access_level: anonymous)
+// Reachability: GET /api/tasks → listTasks() → buildOrderBy() (src/routes/tasks.ts:88)
+// Recommendation: allowlist sort columns; never interpolate user input into SQL.
+describe("security regression: VULN-014", () => {
+  test("rejects SQL injection in sort param", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/tasks?sort=id;DROP TABLE tasks;--",
+    });
+    // Malicious input must be rejected, not executed.
+    expect(res.statusCode).toBe(400);
+  });
+});
+```
+
 ### Data Isolation Rules
 
 1. **Unique names**: Always use `${prefix}-${Date.now()}` or `crypto.randomUUID()`
@@ -352,6 +383,12 @@ For each test file:
 4. **Write the file** — Use the Write tool
 5. **Run the tests** — Verify they pass: `bun test <file>`
 6. **Fix failures** — If tests fail, read the error and fix
+7. **Fresh-context review** — Spawn a fresh-context subagent (Agent tool) given ONLY the generated test file and the source file under test — *not* the generation reasoning, plan, or this skill. Have it flag:
+   - **Vacuous tests** — assertions that can't fail (e.g. `expect(true).toBe(true)`, no assertion at all, asserting on a mock's own return value)
+   - **Over-mocked tests** — mocking the very behavior under test, so the test only exercises the mock
+   - **Tautological tests** — asserting the implementation against itself (e.g. recomputing the expected value with the source's own logic)
+
+   Any flagged test must be rewritten before the phase completes. A green test can still be vacuous — passing is necessary but not sufficient, and a fresh context with no memory of *why* the test was written catches what the author rationalizes away.
 
 ### Post-Generation
 
@@ -481,3 +518,4 @@ export default defineConfig({
 - **Parallel agents** — Use the Agent tool to parallelize. Each agent gets one test file. Max 6 concurrent agents to avoid resource contention.
 - **Clean up after yourself** — Every test must clean up its data. No orphaned DB rows, temp files, or test projects.
 - **No secrets in tests** — Use fake data. Never reference real API keys, tokens, or credentials.
+- **Security regression tests must fail first** — A security regression test MUST be confirmed to FAIL against the unpatched code path before you trust it. If it passes immediately, flag that the finding may already be mitigated rather than shipping a vacuous guard that proves nothing.
