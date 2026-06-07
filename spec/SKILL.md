@@ -121,7 +121,7 @@ Implement each step from the plan, one at a time.
    - Run the linter. Fix any errors introduced by your changes.
    - **Do not proceed to the next step with failing tests.**
 
-4. **Self-review the diff** — Re-read this step's diff against the codebase's conventions and the spec's requirements. Fix any deviations before moving on.
+4. **Independent verification (fresh context)** — Spawn a subagent via the Task/Agent tool to verify this step. Give it ONLY (a) this step's diff and (b) this step's acceptance criteria from the plan — explicitly NOT the plan narrative or your own implementing reasoning. Its job: flag scope creep, convention drift, and non-minimal changes. The step is only complete when the verifier passes; fix anything it flags and re-verify. The author's context biases review toward approval — a fresh reader sees only what the diff actually does.
 
 5. **Validate** — After tests pass:
    - Check for type errors if applicable

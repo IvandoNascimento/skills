@@ -48,7 +48,7 @@ For each phase:
    - Run the type checker (check CLAUDE.md, or AGENTS.md if no CLAUDE.md, for the command) and fix all type errors before marking the phase complete.
    - If the phase touched UI, run E2E tests or verify manually in the browser.
    - **A phase cannot be marked complete with failing tests.**
-5. **Self-review the diff** — re-read the phase's diff against the codebase conventions and the mission's scope; fix any deviations before marking the phase complete.
+5. **Independent verifier** — spawn a fresh-context subagent (via Task/Agent) given *only* the phase's diff, the project's CLAUDE.md/AGENTS.md conventions, and the phase's work items — explicitly **not** your implementing reasoning or this conversation. A reviewer who never saw the rationale catches scope creep, convention drift, and non-minimal changes that self-review rubber-stamps. The verifier flags those issues; the phase gate passes only on a verifier pass — fix any flagged deviations and re-verify before marking the phase complete.
 6. Mark phase as `completed` with a brief summary of what was done + test results
 7. Ask the user if they want to continue to the next phase or pause
 
